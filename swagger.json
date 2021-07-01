@@ -1,0 +1,698 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "MedRec API specification v1.0",
+    "version": "1.0.0",
+    "title": "MedRecord API",
+    "contact": {
+      "email": "admin@morpheuslabs.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "serverlrxutfq6-dev-machine-server-3000.morpheuslabs.io",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "user",
+      "description": "Apis for user to login, register"
+    },
+    {
+      "name": "medrec",
+      "description": "API for providers to add medical records for patient"
+    },
+    {
+      "name": "admin",
+      "description": "Api for system admin to approve providers, authenticated institues"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions":{
+    "Bearer": {
+      "type": "apiKey",
+      "name":"Authorization",
+      "in": "header"
+    }
+  },
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Register",
+        "description": "",
+        "operationId": "register",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User object that needs to register",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs user into the system",
+        "description": "Default admin user (admin/admin)",
+        "operationId": "loginUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Default admin user (admin/admin)",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginForm"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            },
+            "headers": {
+              "X-Rate-Limit": {
+                "type": "integer",
+                "format": "int32",
+                "description": "calls per hour allowed by the user"
+              },
+              "X-Expires-After": {
+                "type": "string",
+                "format": "date-time",
+                "description": "date in UTC when token expires"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/user/logout": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs out current logged in user session",
+        "description": "",
+        "operationId": "logoutUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/med/diagnosecats": {
+      "get": {
+        "tags": [
+          "medrec"
+        ],
+        "summary": "Get list diagnose category",
+        "description": "",
+        "operationId": "getDiagnosecats",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            },
+            "headers": {
+              "X-Rate-Limit": {
+                "type": "integer",
+                "format": "int32",
+                "description": "calls per hour allowed by the user"
+              },
+              "X-Expires-After": {
+                "type": "string",
+                "format": "date-time",
+                "description": "date in UTC when token expires"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/med/diagnoses/{patientAddress}":{
+      "get": {
+        "tags": [
+          "medrec"
+        ],
+        "summary": "Get list diagnose of patient",
+        "description": "",
+        "operationId": "getDiagnose",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "patientAddress",
+            "in": "path",
+            "description": "Eth address of patient",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/med/diagnoses/result/{diagnoseMerkleRoot}":{
+      "get": {
+        "tags": [
+          "medrec"
+        ],
+        "summary": "Get result of diagnose of patient",
+        "description": "",
+        "operationId": "getDiagnoseResult",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "diagnoseMerkleRoot",
+            "in": "path",
+            "description": "MerkleRoot of diagnose",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/med/patient":{
+      "post": {
+        "tags": [
+          "medrec"
+        ],
+        "summary": "Create new patient",
+        "description": "",
+        "operationId": "addPatient",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addPatientForm"
+            }
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/med/diagnose":{
+      "post": {
+        "tags": [
+          "medrec"
+        ],
+        "summary": "Add a diagnose test for a patient",
+        "description": "",
+        "operationId": "addDiagnose",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addDiagnoseForm"
+            }
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/med/diagnose/result":{
+      "post": {
+        "tags": [
+          "medrec"
+        ],
+        "summary": "Add a diagnose test result for a patient",
+        "description": "",
+        "operationId": "addDiagnoseResult",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CovidtestResults"
+            }
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/admin/providers?status={status}":{
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get all providers",
+        "description": "",
+        "operationId": "getProviders",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "description": "status of provider",
+            "required": false,
+            "type": "integer",
+            "enum": [1,0]
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/admin/authinstitutes?status={status}":{
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get all authencated institute",
+        "description": "",
+        "operationId": "getInstitute",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "description": "status of institutes",
+            "required": false,
+            "type": "integer",
+            "enum": [1,0]
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/approve":{
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get all authencated institute",
+        "description": "",
+        "operationId": "approveUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type":"object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "security":[
+          {"Bearer": []}
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  
+  "definitions": {
+    "Diagnose": {
+      "type": "object",
+      "required": ["patientAddress","name", "time"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "diagnoseCode": {
+          "type": "string"
+        },
+        "providerAddress": {
+          "type": "string"
+        },
+        "patientAddress": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string"
+        },
+        "merkleRoot": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Order"
+      }
+    },
+    "DiagnoseCategory": {
+      "type": "object",
+      "required": ["code", "class", "type"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "class": {
+          "type": "integer",
+          "description": "Group of diagnose category"
+        },
+        "type": {
+          "type": "integer",
+          "description": "Type of diagnose"
+        }
+
+      },
+      "xml": {
+        "name": "Category"
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": ["username", "password", "firstName","lastName", "email", "phone", "identification"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Provider",
+            "AuthViewer",
+            "Patient"
+          ]
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "identification": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "enum": [
+            "pending",
+            "approved"
+          ]
+        },
+        "ethAddress": {
+          "type": "string"
+        },
+        "merkleRoot": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    },
+    "CovidtestResults": {
+      "type": "object",
+      "required": ["diagnoseMerkleRoot", "patientAddress", "rt_qpcr","igg", "igm"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "diagnoseMerkleRoot": {
+          "type": "string"
+        },
+        "patientAddress": {
+          "type": "string"
+        },
+        "rt_qpcr": {
+          "type": "integer",
+          "enum":[1,0]
+        },
+        "igg": {
+          "type": "integer",
+          "enum":[1,0]
+        },
+        "igm": {
+          "type": "integer",
+          "enum":[1,0]
+        },
+        "note": {
+          "type": "string"
+        },
+        "merkleRoot": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Tag"
+      }
+    },
+    "LoginForm": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "LoginForm"
+      }
+    },
+    "addPatientForm" :{
+      "type": "object",
+      "required": ["username", "password","firstName","lastName","email","phone", "identification"],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "identification": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "addDiagnoseForm" :{
+      "type": "object",
+      "required": ["patientAddress", "time","name","note"],
+      "properties": {
+        "patientAddress": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "addDiagnoseResultForm" :{
+      "type": "object",
+      "required": ["patientAddress", "diagnoseMerkleRoot","time","rt_qpcr", "igm", "igg"],
+      "properties": {
+        "patientAddress": {
+          "type": "string"
+        },
+        "diagnoseMerkleRoot": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "rt_qpcr": {
+          "type": "integer"
+        },
+        "igm": {
+          "type": "integer"
+        },
+        "igg": {
+          "type": "integer"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

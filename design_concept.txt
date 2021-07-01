@@ -1,0 +1,88 @@
+Smart contract Interfaces
+=========================
+
+Permissions
+	- sysadminOnly // Morpheuslabs admin
+	- providerOnly // clinics, hospitals, ..
+	- authViewOnly // governments / authenticated institutions
+	- patientOnly // patient
+	
+RegisterContract
+	- registerInstitution sysadminOnly
+	- registerProvider sysadminOnly
+	- addPatient providerOnly
+ 
+PatientContract
+	- mapping(address -> Patient Hash ID) // mapping address of patient with their personal HashInfo
+	- addPatient providerOnly
+ 
+ProviderContract
+	- mapping(providerAddr -> providerId) // mapping of all registered providers
+	- registerProvider sysadminOnly
+	- addDiagnose providerOnly
+	
+MedRecContract
+	- mapping(patientAddr -> mapping(providerAddress -> bool)) // mapping permission allow with provider can view/add records for a patient
+	- mapping(patientAddr -> List(Medical Diagnoses hash)) // mapping patientAddr to their list of diagnoses/treatments they took.
+	- addPatient providerOnly
+	- getPatientDiagnoses 
+
+
+Note: All information save onchain is hash of document only (Ref as Baseline rules). So, it's able to run on both public network (mainnet) or private net(PoA)
+
+Because there is no actual information is saved on net.
+
+
+DB schema:
+==========
+Patient
+	- id
+	- government_id
+	- eth_address
+	- first_name
+	- last_name
+	- email
+	- address
+	- dob
+	- city
+	- zip
+	
+Provider
+	- id
+	- government_id
+	- eth_address
+	- first_name
+	- last_name
+	- email
+	- address
+	- dob
+	- city
+	- zip
+	
+Diagnoses
+	- id
+	- title
+	- patient_id
+	- provider_id
+	- result_code
+	- time
+
+Diagnoses_detail
+
+	- id
+	- diagnose_id
+	- dianose_data
+	
+
+Document
+	- id
+	- diagnose_id
+	- provider_id
+	- doc_id
+	
+MedicalInfo
+	- id
+	- medication_code
+	- medication_name
+
+
